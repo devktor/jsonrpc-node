@@ -1,4 +1,4 @@
-Client = require("jsonrpc-node").Client
+Client = require("../").Client
 
 var client = new Client();
 

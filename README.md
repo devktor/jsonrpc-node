@@ -15,7 +15,7 @@ RPCServer = require("jsonrpc-node").Server;
 ```
 Create server object
 ```javascript
-var server = new RPCServer({echo:function(args){return {result:args};});
+var server = new RPCServer({echo:function(args, reply){return reply(args);});
 ```
 or without arguments
 ```javascript
@@ -24,12 +24,16 @@ var server = new RPCServer();
 
 Register some methods
 ```javascript
-server.register("ping", function(args){ return "pong";})
+server.register("ping", function(args, reply){
+    reply("pong");
+    reply.notify("pong2"); //data can be streamed
+});
+
 ```
 
 or bulk register
 ```javascript
-server.register({ping:function(args){return "pong";}, time:function(args){return Date.now();}}
+server.register({ping:function(args, reply){reply("pong");}, time:function(args, reply){return reply.error("some error");}}
 ```
 
 

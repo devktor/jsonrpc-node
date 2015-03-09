@@ -20,10 +20,13 @@ class Session extends EventEmitter
         catch e
           @emit "error", "#{e}"
 
-  sendError:(id, msg)->
-    @socket.write @format
+  sendError:(id, method, msg, callback)->
+    msg =
       id: id
+      method: method
       error: msg
+    @socket.write @format(msg), @encoding, callback
+
 
   sendMessage:(id, method, params, callback)->
     msg =
@@ -32,8 +35,10 @@ class Session extends EventEmitter
       params: params
     @socket.write @format(msg), @encoding, callback
 
+
   sendNotification:(method, params, callback)->
     @sendMessage null, method, params, callback
+
 
   format: (msg)->
     "#{JSON.stringify msg}\n"

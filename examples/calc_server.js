@@ -1,12 +1,20 @@
-RPCServer = require("jsonrpc-node").Server;
+RPCServer = require("../").Server;
 
 
-function sum(reply, a, b, c){
-    reply.error(a+b+c);
+function sum(args, reply){
+    var result = 0;
+    for(var i in args){
+        result+=args[i];
+    }
+    reply.error(result);
 }
 
-function multiply(reply, a, b, c){
-    reply(a*b*c);
+function multiply(args, reply){
+    var result = 0;
+    for(var i in args){
+        result*=args[i];
+    }
+    reply(result);
 }
 
 var server = new RPCServer({sum:sum})

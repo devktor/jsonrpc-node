@@ -17,10 +17,10 @@ class Client extends Session
         request.replies++
         request.time = Date.now()
         if message.error?
-          request.callback message.error, message
+          request.callback message.error, message.params
           delete @requests[request.id]
         else
-          request.callback null, message
+          request.callback null, message.params
     setInterval ()=>
       now = Date.now()
       for _,request of @requests
