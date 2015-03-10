@@ -24,18 +24,18 @@ class Client extends Session
     setInterval ()=>
       now = Date.now()
       for _,request of @requests
-        if (now - request.time) > @timeout
+        if (now - request.time) > request.timeout
           if !request.replies then request.callback "timeout"
           delete @requests[request.id]
     ,@timeout
 
-  call:(method, params, callback)->
+  call:(method, params, callback, timeout)->
     id = ++@lastID
     @sendMessage id, method, params, (err)=>
       if err
         callback err
       else
-        @requests[id] = {id:id, time:Date.now(), callback: callback, replies: 0}
+        @requests[id] = {id:id, time:Date.now(), callback: callback, replies: 0, timeout:timeout||@timeout}
 
 
 
