@@ -8,6 +8,7 @@ Server = module.exports = (opt)->
   handler.__proto__ = Server
   handler.methods = {}
   handler.counter = 0
+  handler.socket = net.createServer @
   if opt? then handler.register opt
   handler
 
@@ -46,9 +47,10 @@ Server.execute = (session, msg)->
       else
         reply.error "method not found"
 
+Server.on = (event, callback)->
+  @socket.on event, callback
 
 Server.listen = ()->
-  @socket = net.createServer @
   @socket.listen.apply @socket, arguments
 
 
