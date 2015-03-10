@@ -8,7 +8,7 @@ Server = module.exports = (opt)->
   handler.__proto__ = Server
   handler.methods = {}
   handler.counter = 0
-  handler.socket = net.createServer @
+  handler.socket = net.createServer handler
   if opt? then handler.register opt
   handler
 
