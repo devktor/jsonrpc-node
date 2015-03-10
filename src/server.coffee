@@ -20,7 +20,7 @@ Server.register = (method, callback)->
       for own key, callback of method
         @methods[key] = callback
   else
-    @methods[key] = callback
+    @methods[method] = callback
 
 
 Server.handle = (socket)->
