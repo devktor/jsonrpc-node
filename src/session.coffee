@@ -1,5 +1,5 @@
 {EventEmitter} = require "events"
-
+readline = require "readline"
 class Session extends EventEmitter
 
   constructor:(socket)->
@@ -10,15 +10,14 @@ class Session extends EventEmitter
     @delimiter = "\n"
     @socket.setEncoding @encoding
     @socket.on "error", (msg)=> @emit "error", msg
-    @socket.on "data", (data)=>
-      if data.slice(-1) != @delimiter
-        @emit "error", "invalid message"
-      else
-        try
-          msg = JSON.parse data
-          @emit "message", msg
-        catch e
-          @emit "error", "#{e}"
+    @stream = readline.createInterface @socket, @socket
+    @stream.on "line",(msg)=>
+      try
+        msg = JSON.parse data
+        @emit "message", msg
+      catch e
+        @emit "error", "#{e}"
+
 
   sendError:(id, method, msg, callback)->
     msg =
