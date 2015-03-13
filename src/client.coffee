@@ -12,15 +12,18 @@ class Client extends Session
     @init net.connect.apply @, arguments
     @socket.on "connection", ()=> @emit "connection"
     @on "message", (message)=>
-      request = @requests[message.id]
-      if request?
-        request.replies++
-        request.time = Date.now()
-        if message.error?
-          request.callback message.error, message.params
-          delete @requests[request.id]
-        else
-          request.callback null, message.params
+      if !message.id?
+        @emit message.method, message.params
+      else
+        request = @requests[message.id]
+        if request?
+          request.replies++
+          request.time = Date.now()
+          if message.error?
+            request.callback message.error, message.params
+            delete @requests[request.id]
+          else
+            request.callback null, message.params
     setInterval ()=>
       now = Date.now()
       for _,request of @requests

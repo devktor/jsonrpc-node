@@ -11,7 +11,7 @@ class Session extends EventEmitter
     @socket.setEncoding @encoding
     @socket.on "error", (msg)=> @emit "error", msg
     @stream = readline.createInterface @socket, @socket
-    @stream.on "line",(msg)=>
+    @stream.on "line",(data)=>
       try
         msg = JSON.parse data
         @emit "message", msg
