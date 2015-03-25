@@ -2,15 +2,24 @@ net = require "net"
 Session = require "./session"
 
 class Client extends Session
+  connected = false
+
   constructor:(host)->
     @requests = {}
     @lastID = 0
     @timeout = 60000
     if host? then @connect host
 
-  connect:(@host)->
+  connect:(@port, @host)->
     @init net.connect.apply @, arguments
-    @socket.on "connection", ()=> @emit "connection"
+
+    @socket.on "connect", ()=>
+      if !connected
+        connected = true
+        @emit "connect"
+
+    @socket.on "close", ()-> connected = false
+
     @on "message", (message)=>
       if !message.id?
         @emit message.method, message.params
@@ -31,6 +40,13 @@ class Client extends Session
           if !request.replies then request.callback "timeout"
           delete @requests[request.id]
     ,@timeout
+
+  reconnect:()->
+    @socket.close()
+    @connect @port, @host
+
+  onReady: (callback)->
+    if connected then callback() else @on "connect", callback
 
   call:(method, params, callback, timeout)->
     id = ++@lastID
