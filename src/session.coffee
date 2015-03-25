@@ -1,11 +1,22 @@
 {EventEmitter} = require "events"
 readline = require "readline"
+
 class Session extends EventEmitter
 
   constructor:(socket)->
     if socket? then @init socket
 
-  init:(@socket)->
+  clear:()->
+    if @socket?
+      @stream.close()
+      @socket.destroy()
+      delete @stream
+      delete @socket
+
+  init:(socket)->
+    @clear()
+
+    @socket = socket
     @encoding = "utf8"
     @delimiter = "\n"
     @socket.setEncoding @encoding
