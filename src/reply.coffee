@@ -11,7 +11,7 @@ Reply = module.exports = (session, id, method)->
 
 
 Reply.message = (args)->
-  @session.sendMessage @id, @method, args
+  @session.sendReply @id, @method, args
 
 
 

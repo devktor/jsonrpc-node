@@ -1,6 +1,7 @@
 BasicAuth = require "./http_client_basic_auth"
+{EventEmitter} = require "events"
 
-class Client
+class Client extends EventEmitter
   constructor:(@port, @host, secure)->
     @transport = require if secure? and secure then "https" else "http"
 
@@ -9,14 +10,19 @@ class Client
   setBasicAuth: (username, password)->
     @setAuth new BasicAuth username, password
 
-  sendData:(request, callback)->
+  sendData:(request, headers, callback )->
+    if !callback?
+      callback = headers
+      headers = {}
+
     options =
       host: @host
       port: @port
       method: "post"
       path: @path
-      headers:
-        Host: @host
+      headers: headers
+
+    options.headers.Host = @host
 
     if @auth?
       @auth.sign options, request

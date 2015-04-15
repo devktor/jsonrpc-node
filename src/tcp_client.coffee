@@ -15,17 +15,17 @@ class Client extends Session
     if host? and port? then @connect port, host, secure
     @on "message", (message)=>
       if !message.id?
-        @emit message.method, message.params
+        @emit message.method, message.result
       else
         request = requests[message.id]
         if request?
           request.replies++
           request.time = Date.now()
           if message.error?
-            request.callback message.error, message.params
+            request.callback message.error, message.result
             @cancelRequest request.id
           else
-            request.callback null, message.params
+            request.callback null, message.result
     setInterval ()=>
       now = Date.now()
       for _,request of requests
@@ -38,7 +38,6 @@ class Client extends Session
     connecting = true
     transport = if @secure? then tls else net
     @init transport.connect @port, @host, (err)=>
-      console.log "#{if err? then 'failed to connect' else 'connected'} #{@host}:#{@port}"
       connecting = false
       @emit "connect-result", err
       callback? err

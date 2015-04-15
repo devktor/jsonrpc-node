@@ -36,7 +36,7 @@ class Session extends EventEmitter
   sendNotification:(method, params, callback)-> @sendData id:null, method:method, params:params, callback
   sendError:(id, method, message, callback)-> @sendData id:id, method:method, error:message, callback
   sendMessage:(id, method, params, callback)-> @sendData id:id, method:method, params:params, callback
-
+  sendReply:(id, method, result, callback)-> @sendData id:id, method:method, result:result, callback
   format: (msg)->
     "#{JSON.stringify msg}\n"
 

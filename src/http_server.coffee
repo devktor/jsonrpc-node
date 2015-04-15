@@ -4,10 +4,16 @@ Reply = require "./reply"
 
 class Session
   constructor:(@res)->
-  sendData:(obj)-> @res.send obj
-  sendError:(id, method, message)-> @res.status(500).send id:id, method:method, error:message
-  sendNotification:(method, params)-> @sendData id:null, method:method, params:params
-  sendMessage:(id, method, params)-> @sendData id:id, method:method, params:params
+  sendData:(obj)-> @res.json obj
+
+  sendError:(id, method, message)->
+    @res.status(500).json id:id, method:method, error:message
+
+  sendNotification:(method, params)->
+    @res.json id:null, method:method, result:params
+
+  sendReply:(id, method, params)->
+    @res.json id:id, method:method, result:params
 
 Server = module.exports = (opt)->
   handler = (req, res, next)->
@@ -27,19 +33,17 @@ Server.register = (method, callback)->
   else
     @methods[key] = callback
 
-Server.handle = (req, res, next)->
+Server.handle = (req, res)->
   if @auth? and !@auth req
-    res.status(401).send({error:"Unauthorized"})
+    res.status(401).json({error:"Unauthorized"})
   else
     try
       request = if req.body instanceof Object then req.body else JSON.parse req.body
-      res.header "Content-Type", "application/json"
       reply = new Reply new Session(res), request.id, request.method
       @execute request.method, request.params, reply
     catch e
       console.warn(e);
-      res.status(500).send({error: "invalid request"})
-    next?()
+      res.status(500).json({error: "invalid request"})
 
 Server.execute = (method, params, reply)->
   if @methods[method]?

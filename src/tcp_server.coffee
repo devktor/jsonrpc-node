@@ -31,7 +31,6 @@ Server.handle = (socket)->
     @execute session, msg
   session.on "error", (msg)-> console.log "session #{session.id} error: ",msg
   session.on "close", ()-> console.log "session #{session.id} closed"
-  console.log "new connection #{session.id}"
 
 
 Server.execute = (session, msg)->
