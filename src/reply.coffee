@@ -10,17 +10,17 @@ Reply = module.exports = (session, id, method)->
   handler
 
 
-Reply.message = (args)->
-  @session.sendMessage @id, @method, args
+Reply.message = ()->
+  @session.send id:@id, method:@method, params:arguments
 
 
 
 Reply.error = (text)->
-  @session.sendError @id, @method, text
+  @session.send id:@id, method:@method, error:text
 
 
-Reply.notify = (text)->
-  @session.sendNotification @method, text
+Reply.notify = ()->
+  @session.send id:null, method:@method, params:arguments
 
 
 module.exports = Reply

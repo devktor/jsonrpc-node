@@ -1,4 +1,6 @@
 BasicAuth = require "./http_server_basic_auth"
+parser = require("body-parser")
+Reply = require "./reply"
 
 Server = module.exports = (opt)->
   handler = (req, res, next)->
@@ -24,25 +26,22 @@ Server.handle = (req, res, next)->
   else
     try
       request = if req.body instanceof Object then req.body else JSON.parse req.body
-      response = @execute request.method, request.params
-      response.id = if request.id? then request.id else null
       res.header "Content-Type", "application/json"
-      code =  if response.error? then 400 else 200
-      res.status(code).send(JSON.stringify response)
+      reply = new Reply res, request.id, request.method
+      @execute request.method, request.params, reply
     catch e
       console.warn(e);
       res.status(500).send({error: "invalid request"})
+    next?()
 
-Server.execute = (method, params)->
+Server.execute = (method, params, reply)->
   if @methods[method]?
-    result = @methods[method](params)
+    @methods[method](params, reply)
   else
     if @defaultMethod?
-      result = @defaultMethod method, params
+      @defaultMethod method, params, reply
     else
-      {error: "method #{method} not found"}
-  if result instanceof Object then result else {result: result}
-
+      reply.error "method #{method} not found"
 
 Server.setAuth = (@auth)->
 
@@ -52,11 +51,15 @@ Server.setBasicAuth = (authorize)->
 
 Server.listen = (port, host, callback)->
   @app = require('express')()
-  @server = require('http').createServer app
-  @app.use @
-  @server.listen port, host, callback
+  @server = require('http').createServer @app
+  @_listen port, host, callback
 
 Server.listenSSL = (port, host, key, cert, callback)->
   @app = require("express")()
   @server = require("https").createServer {key:key, cert:cert}, @app
+  @_listen port, host, callback
+
+Server._listen = (port, host, callback)->
+  @app.use(parser.json());
+  @app.use @
   @server.listen port, host, callback
