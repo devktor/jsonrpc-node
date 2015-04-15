@@ -2,6 +2,13 @@ BasicAuth = require "./http_server_basic_auth"
 parser = require("body-parser")
 Reply = require "./reply"
 
+class Session
+  constructor:(@res)->
+  sendData:(obj)-> @res.send obj
+  sendError:(id, method, message)-> @res.status(500).send id:id, method:method, error:message
+  sendNotification:(method, params)-> @sendData id:null, method:method, params:params
+  sendMessage:(id, method, params)-> @sendData id:id, method:method, params:params
+
 Server = module.exports = (opt)->
   handler = (req, res, next)->
     handler.handle req, res, next
@@ -27,7 +34,7 @@ Server.handle = (req, res, next)->
     try
       request = if req.body instanceof Object then req.body else JSON.parse req.body
       res.header "Content-Type", "application/json"
-      reply = new Reply res, request.id, request.method
+      reply = new Reply new Session(res), request.id, request.method
       @execute request.method, request.params, reply
     catch e
       console.warn(e);

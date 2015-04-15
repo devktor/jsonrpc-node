@@ -1,6 +1,6 @@
 net = require "net"
 tls = require "tls"
-Session = require "./session"
+Session = require "./tcp_session"
 Reply = require "./reply"
 
 Server = module.exports = (opt)->

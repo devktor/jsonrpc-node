@@ -11,7 +11,9 @@
     } 
   ],
   "dependencies" : {
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "express": "*",
+    "body-parser": "*"
   },
   "license": "MIT",
   "repository":{

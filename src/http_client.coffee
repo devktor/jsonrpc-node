@@ -1,19 +1,15 @@
 BasicAuth = require "./http_client_basic_auth"
 
 class Client
-  constructor:(url)->
-    @transport = if url.protocol? and url.protocol == "https" then require "https" else require "http"
-    @host = url.host
-    @port = url.port
-    @path = url.path
+  constructor:(@port, @host, secure)->
+    @transport = require if secure? and secure then "https" else "http"
 
   setAuth:(@auth)->
 
   setBasicAuth: (username, password)->
     @setAuth new BasicAuth username, password
 
-  call: (method, params, callback)->
-    request = {method: method, params: params}
+  sendData:(request, callback)->
     options =
       host: @host
       port: @port
@@ -29,7 +25,7 @@ class Client
     options.headers['Content-Length'] = query.length
     options.headers["Content-Type"]  = "application/json"
 
-    #    options.rejectUnauthorized = false
+    options.rejectUnauthorized = false
 
     request = @transport.request options
 
@@ -41,7 +37,8 @@ class Client
       response.on 'data', (chunk)->
         buffer += chunk
       response.on 'end', ()->
-        err = msg = null
+        err = null
+        msg = null
         if response.statusCode == 200
           try
             json = JSON.parse buffer
@@ -52,8 +49,15 @@ class Client
         else
           err = "Server replied with : "+response.statusCode
         callback err, msg
-
     request.end query
 
+  call: (method, params, callback)->
+    request = {method: method, params: params, id:Date.now()}
+    @sendData request, callback
+
+  sendNotification: (method, params, callback)->
+    @sendData id:null, method:method, params:params, callback
+
+  onceReady:(callback)-> callback()
 
 module.exports = Client

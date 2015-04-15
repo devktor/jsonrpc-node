@@ -1,10 +1,11 @@
 net = require "net"
-Session = require "./session"
+Session = require "./tcp_session"
 
 class Client extends Session
   requests = {}
   lastID = 0
   connected = false
+  connecting = false
 
   constructor:(port, host)->
     super()
@@ -33,10 +34,13 @@ class Client extends Session
     ,@timeout
 
   connect:(@port, @host, callback)->
-    console.log "trying to connect ", arguments
-    if !callback? then callback = (err)-> console.log "#{if err? then 'failed to connect' else 'connected'} #{@ip}:#{@port}"
-    console.log "callback = ",callback
-    @init net.connect(@port, @host, callback)
+    connecting = true
+    @init net.connect @port, @host, (err)=>
+      console.log "#{if err? then 'failed to connect' else 'connected'} #{@host}:#{@port}"
+      connecting = false
+      @emit "connect-result", err
+      callback? err
+
     @socket.on "connect", ()=>
       if !connected
         connected = true
@@ -51,6 +55,9 @@ class Client extends Session
   onceReady: (callback)->
     if connected then callback() else @once "connect", callback
 
+  onceConnected: (callback)->
+    if connected then callback() else @once "connect-result", callback
+
   cancelRequest:(id)->
     delete requests[id]
 
@@ -58,7 +65,10 @@ class Client extends Session
     if connected
       @_call method, params, callback, timeout
     else
-      @reconnect (err)=> if err? then callback err else @_call method, params, callback, timeout
+      if connecting
+        @onceConnected if err? then callback err else @_call method, params, callback, timeout
+      else
+        @reconnect (err)=> if err? then callback err else @_call method, params, callback, timeout
 
   _call:(method, params, callback, timeout)->
     id = ++lastID
