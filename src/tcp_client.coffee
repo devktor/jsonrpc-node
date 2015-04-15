@@ -1,4 +1,5 @@
 net = require "net"
+tls = require "tls"
 Session = require "./tcp_session"
 
 class Client extends Session
@@ -7,11 +8,11 @@ class Client extends Session
   connected = false
   connecting = false
 
-  constructor:(port, host)->
+  constructor:(port, host, secure)->
     super()
     @on "error", ()-> connected = false
     @timeout = 60000
-    if host? and port? then @connect port, host
+    if host? and port? then @connect port, host, secure
     @on "message", (message)=>
       if !message.id?
         @emit message.method, message.params
@@ -33,9 +34,10 @@ class Client extends Session
           @cancelRequest request.id
     ,@timeout
 
-  connect:(@port, @host, callback)->
+  connect:(@port, @host, @secure, callback)->
     connecting = true
-    @init net.connect @port, @host, (err)=>
+    transport = if @secure? then tls else net
+    @init transport.connect @port, @host, (err)=>
       console.log "#{if err? then 'failed to connect' else 'connected'} #{@host}:#{@port}"
       connecting = false
       @emit "connect-result", err
@@ -50,7 +52,7 @@ class Client extends Session
 
   reconnect:(callback)->
     @socket.destroy()
-    @connect @port, @host, callback
+    @connect @port, @host, @secure, callback
 
   onceReady: (callback)->
     if connected then callback() else @once "connect", callback
