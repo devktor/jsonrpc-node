@@ -1,5 +1,5 @@
 ##JSONRPC-Node
-JSON RPC client/server over TCP for node.js
+Multi transport JSON-RPC client/server with SSL support for node.js
 
 
 ###installation
@@ -11,15 +11,20 @@ npm install jsonrpc-node
 
 Include library
 ```javascript
-RPCServer = require("jsonrpc-node").Server;
+Server = require("jsonrpc-node").TCP.Server;
 ```
+or over http
+```javascript
+Server = require("jsonrpc-node").HTTP.Server;
+```
+
 Create server object
 ```javascript
-var server = new RPCServer({echo:function(args, reply){return reply(args);});
+var server = new Server({echo:function(args, reply){return reply(args);});
 ```
 or without arguments
 ```javascript
-var server = new RPCServer();
+var server = new Server();
 ```
 
 Register some methods
@@ -41,26 +46,29 @@ Start listening
 ```javascript
 server.listen(3001, "localhost")
 ```
-
+or use SSL connection
+```javascript
+server.listenSSL(3001, "localhost","key.pem","cert.pem");
+```
 
 ###client
 
 Include library
 ```javascript
-Client = require("jsonrpc-node").Client;
+Client = require("jsonrpc-node").TCP.Client;
+```
+or
+```javascript
+Client = require("jsonrpc-node").HTTP.Client;
 ```
 
 Create client object
 ```javascript
-client = new Client();
+client = new Client(3001, "localhost");
 ```
 
-Connect to server
-```
-client.connect(3001, "localhost")
-```
 
 Execute remote methods
 ```javascript
-client2.call("multiply", [1,2,4], function(err, result){})
+client.call("multiply", [1,2,4], function(err, result){})
 ```
