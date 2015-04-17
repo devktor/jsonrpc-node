@@ -51,6 +51,22 @@ or use SSL connection
 server.listenSSL(3001, "localhost","key.pem","cert.pem");
 ```
 
+or can be used as middleware,
+
+tcp server for net.Server
+
+```javascript
+net.createServer(server)
+```
+
+http server for express
+
+```javascript
+var app = express();
+app.use("/api", server);
+```
+
+
 ###client
 
 Include library
