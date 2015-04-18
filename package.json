@@ -3,7 +3,7 @@
   "preferGlobal": false,
   "version": "1.2.1",
   "author": "Victor Bucataru <ping@devktor.com>",
-  "description": "JSON RPC client/server over tcp",
+  "description": "JSON RPC client/server with multiple transport types : TCP, HTTP, Middleware and SSL support",
   "contributors": [ 
     {
       "name": "Victor Bucataru",
