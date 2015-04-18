@@ -1,7 +1,7 @@
 {
   "name": "jsonrpc-node",
   "preferGlobal": false,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "Victor Bucataru <ping@devktor.com>",
   "description": "JSON RPC client/server over tcp",
   "contributors": [ 
@@ -24,7 +24,7 @@
     "url": "https://github.com/devktor/jsonrpc-node/issues"
   },
   "scripts": {
-    "preinstall": "coffee -o lib -c src/"
+    "install": "node_modules/coffee-script/bin/coffee -o lib -c src/"
   },
   "keywords": ["jsonrpc", "rpc", "tcp", "udp", "socket", "client", "server"],
   "main": "lib/main.js",
