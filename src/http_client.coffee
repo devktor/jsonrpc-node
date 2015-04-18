@@ -19,7 +19,7 @@ class Client extends EventEmitter
       host: @host
       port: @port
       method: "post"
-      path: @path
+      path: @path||"/"
       headers: headers
 
     options.headers.Host = @host
@@ -48,7 +48,7 @@ class Client extends EventEmitter
         if response.statusCode == 200
           try
             json = JSON.parse buffer
-            if json.error? then err = json.err
+            if json.error? then err = new Error json.error
             if json.result then msg = json.result
           catch e
             err = e
