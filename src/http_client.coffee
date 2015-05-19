@@ -36,7 +36,7 @@ class Client extends EventEmitter
     request = @transport.request options
 
     request.on "error", (err)->
-      callback err
+      callback? err
 
     request.on "response", (response)->
       buffer = ''
@@ -54,14 +54,14 @@ class Client extends EventEmitter
             err = e
         else
           err = "Server replied with : "+response.statusCode
-        callback err, msg
+        callback? err, msg
     request.end query
 
   call: (method, params, callback)->
     request = {method: method, params: params, id:Date.now()}
     @sendData request, callback
 
-  sendNotification: (method, params, callback)->
+  notify: (method, params, callback)->
     @sendData id:null, method:method, params:params, callback
 
   onceReady:(callback)-> callback()

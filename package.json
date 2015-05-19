@@ -24,7 +24,7 @@
     "url": "https://github.com/devktor/jsonrpc-node/issues"
   },
   "scripts": {
-    "install": "node_modules/coffee-script/bin/coffee -o lib -c src/"
+    "install": "./node_modules/coffee-script/bin/coffee -o lib -c src/"
   },
   "keywords": ["jsonrpc", "rpc", "tcp", "udp", "socket", "client", "server"],
   "main": "lib/main.js",
