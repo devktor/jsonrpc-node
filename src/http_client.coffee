@@ -23,11 +23,13 @@ class Client extends EventEmitter
       headers: headers
 
     options.headers.Host = @host
+    if @port? and @port!=80 and @port!=443 then options.headers.Host+=":#{@port}"
 
     if @auth?
       @auth.sign options, request
 
     query = JSON.stringify request
+    options.useSSL = true
     options.headers['Content-Length'] = query.length
     options.headers["Content-Type"]  = "application/json"
 
