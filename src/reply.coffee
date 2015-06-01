@@ -1,26 +1,22 @@
 
 
-Reply = module.exports = (session, id, method)->
+Reply = module.exports = (session, id)->
   handler = (text)->
     handler.message text
   handler.__proto__ = Reply
   handler.session = session
   handler.id = id
-  handler.method  = method
   handler
 
 
-Reply.message = (args)->
-  @session.sendReply @id, @method, args
+Reply.message = (args)-> @session.sendReply @id, args
 
 
 
-Reply.error = (text)->
-  @session.sendError @id, @method, text
+Reply.error = (text)-> @session.sendError @id, text
 
 
-Reply.notify = (args)->
-  @session.sendNotification @method, args
+Reply.notify = (method, args)-> @session.sendNotification method, args
 
 
 module.exports = Reply

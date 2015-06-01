@@ -2,7 +2,8 @@ BasicAuth = require "./http_client_basic_auth"
 {EventEmitter} = require "events"
 
 class Client extends EventEmitter
-  constructor:(@port, @host, secure)->
+  constructor:(port, @host, secure)->
+    @port = parseInt port
     @transport = require if secure? and secure then "https" else "http"
 
   setAuth:(@auth)->
@@ -23,7 +24,7 @@ class Client extends EventEmitter
       headers: headers
 
     options.headers.Host = @host
-    if @port? and @port!=80 and @port!=443 then options.headers.Host+=":#{@port}"
+    if @port? and (@port!=80 or @port!=443) then options.headers.Host+=":#{@port}"
 
     if @auth?
       @auth.sign options, request
@@ -60,7 +61,7 @@ class Client extends EventEmitter
     request.end query
 
   call: (method, params, callback)->
-    request = {method: method, params: params, id:Date.now()}
+    request = {method: method, params: params, id:(new Date).getTime()}
     @sendData request, callback
 
   notify: (method, params, callback)->

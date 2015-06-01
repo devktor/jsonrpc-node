@@ -34,7 +34,7 @@ Server.handle = (socket)->
 
 
 Server.execute = (session, msg)->
-  reply = new Reply session, msg.id, msg.method
+  reply = new Reply session, msg.id
   if @auth? and !session.authenticated? and !@auth msg, session
     reply.error "not authenticated"
   else

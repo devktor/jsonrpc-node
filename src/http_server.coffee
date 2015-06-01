@@ -7,13 +7,15 @@ class Session
   sendData:(obj)-> @res.json obj
 
   sendError:(id, method, message)->
-    @res.status(500).json id:id, method:method, error:message
+    @res.status(500).json id:id, error:message||""
 
   sendNotification:(method, params)->
-    @res.json id:null, method:method, result:params
+    @res.json id:null, method:method, result:params||""
 
   sendReply:(id, method, params)->
-    @res.json id:id, method:method, result:params
+    @res.json id:id, result:params||""
+
+
 
 Server = module.exports = (opt)->
   handler = (req, res, next)->
@@ -39,7 +41,7 @@ Server.handle = (req, res)->
   else
     try
       request = if req.body instanceof Object then req.body else JSON.parse req.body
-      reply = new Reply new Session(res), request.id, request.method
+      reply = new Reply new Session(res), request.id
       @execute request.method, request.params, reply
     catch e
       console.warn(e);

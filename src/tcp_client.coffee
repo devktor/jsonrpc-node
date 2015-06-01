@@ -77,7 +77,7 @@ class Client extends Session
       if err
         callback err
       else
-        requests[id] = {id:id, time:Date.now(), callback: callback, replies: 0, timeout:timeout||@timeout}
+        requests[id] = {id:id, time:(new Date).getTime(), callback: callback, replies: 0, timeout:timeout||@timeout}
 
 
 

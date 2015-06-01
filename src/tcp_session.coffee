@@ -33,12 +33,11 @@ class Session extends EventEmitter
   sendData:(object, callback)->
     @socket.write @format(object), @encoding, callback
 
-  sendNotification:(method, params, callback)-> @sendData id:null, method:method, params:params, callback
-  sendError:(id, method, message, callback)-> @sendData id:id, method:method, error:message, callback
-  sendMessage:(id, method, params, callback)-> @sendData id:id, method:method, params:params, callback
-  sendReply:(id, method, result, callback)-> @sendData id:id, method:method, result:result, callback
-  format: (msg)->
-    "#{JSON.stringify msg}\n"
+  sendNotification:(method, params, callback)-> @sendData id:null, method:method, params:params||"", callback
+  sendError:(id, message, callback)-> @sendData id:id, error:message||"", callback
+  sendMessage:(id, method, params, callback)-> @sendData id:id, method:method, params:params||"", callback
+  sendReply:(id, result, callback)-> @sendData id:id, result:result||"", callback
+  format: (msg)-> "#{JSON.stringify msg}\n"
 
 
   close:()-> @socket.close()
