@@ -36,23 +36,31 @@ Server.register = (method, callback)->
     @methods[key] = callback
 
 Server.handle = (req, res)->
-  if @auth? and !@auth req
-    res.status(401).json({error:"Unauthorized"})
+  if @auth?
+    @auth req, (err, user)=>
+      if err?
+        res.status(401).json({error:"Unauthorized"})
+      else
+        @handleNoAuth req, res, user
   else
-    try
-      request = if req.body instanceof Object then req.body else JSON.parse req.body
-      reply = new Reply new Session(res), request.id
-      @execute request.method, request.params, reply
-    catch e
-      console.warn(e);
-      res.status(500).json({error: "invalid request"})
+    @handleNoAuth req, res, undefined
 
-Server.execute = (method, params, reply)->
+Server.handleNoAuth:(req, res, user)->
+  try
+    request = if req.body instanceof Object then req.body else JSON.parse req.body
+    reply = new Reply new Session(res), request.id
+    @execute request.method, request.params, reply, user
+  catch e
+    console.warn(e);
+    res.status(500).json({error: "invalid request"})
+
+
+Server.execute = (method, params, reply, user)->
   if @methods[method]?
-    @methods[method](params, reply)
+    @methods[method](params, reply, user)
   else
     if @defaultMethod?
-      @defaultMethod method, params, reply
+      @defaultMethod method, params, reply, user
     else
       reply.error "method #{method} not found"
 

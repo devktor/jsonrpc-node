@@ -35,18 +35,26 @@ Server.handle = (socket)->
 
 Server.execute = (session, msg)->
   reply = new Reply session, msg.id
-  if @auth? and !session.authenticated? and !@auth msg, session
-    reply.error "not authenticated"
-  else
-    method = @methods[msg.method]
-    args = if msg.params? and Array.isArray msg.params then msg.params else []
-    if method?
-      method args, reply
-    else
-      if @defaultMethod?
-        @defaultMethod msg.method, args, reply
+  if @auth? and !session.user?
+    !@auth msg, session, (err, user)=>
+      if err?
+        reply.error "not authenticated"
       else
-        reply.error "method not found"
+        session.user = user
+        @executeNoAuth msg, reply, user
+  else
+    @executeNoAuth msg, reply, session.user
+
+Server.executeNoAuth = (msg, reply, user)->
+  method = @methods[msg.method]
+  args = if msg.params? and Array.isArray msg.params then msg.params else []
+  if method?
+    method args, reply, user
+  else
+    if @defaultMethod?
+      @defaultMethod msg.method, args, reply, user
+    else
+      reply.error "method not found"
 
 Server.on = (event, callback)->
   @socket.on event, callback

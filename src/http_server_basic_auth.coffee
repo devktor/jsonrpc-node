@@ -1,5 +1,5 @@
 module.exports = (authorize)->
-  (req)->
+  (req, callback)->
     if !req.headers.authorization? then return false
     token = req.headers.authorization
     parts = token.split(' ')
@@ -8,4 +8,4 @@ module.exports = (authorize)->
     user = auth.split(':')
     if user.length != 2 then return false
 
-    authorize user[0], user[1]
+    authorize user[0], user[1], callback
