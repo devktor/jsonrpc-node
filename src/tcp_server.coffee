@@ -27,8 +27,7 @@ Server.handle = (socket)->
   socket.setEncoding "utf-8"
   session = new Session socket
   session.id = ++@counter
-  session.on "message", (msg)=>
-    @execute session, msg
+  session.on "message", (msg)=> @execute session, msg
   session.on "error", (msg)-> console.log "session #{session.id} error: ",msg
   session.on "close", ()-> console.log "session #{session.id} closed"
 
@@ -37,7 +36,8 @@ Server.execute = (session, msg)->
   reply = new Reply session, msg.id
   if @auth? and !session.user?
     !@auth msg, session, (err, user)=>
-      if err?
+      if err? or not user?
+        console.log "#{reply.session.socket.remoteAddress} not authorized"
         reply.error "not authenticated"
       else
         session.user = user
@@ -54,6 +54,7 @@ Server.executeNoAuth = (msg, reply, user)->
     if @defaultMethod?
       @defaultMethod msg.method, args, reply, user
     else
+      console.log "#{reply.session.socket.remoteAddress} invalid requested method #{method}"
       reply.error "method not found"
 
 Server.on = (event, callback)->

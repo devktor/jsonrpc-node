@@ -52,7 +52,7 @@ class Client extends EventEmitter
           try
             json = JSON.parse buffer
             if json.error? then err = new Error json.error
-            if json.result then msg = json.result
+            if json.result? then msg = json.result
           catch e
             err = e
         else

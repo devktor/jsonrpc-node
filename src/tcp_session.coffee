@@ -27,6 +27,7 @@ class Session extends EventEmitter
         msg = JSON.parse data
         @emit "message", msg
       catch e
+        console.log "#{socket.remoteAddress} invalid message"
         @emit "error", "#{e}"
 
 

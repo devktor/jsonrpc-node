@@ -6,14 +6,14 @@ class Session
   constructor:(@res)->
   sendData:(obj)-> @res.json obj
 
-  sendError:(id, method, message)->
+  sendError:(id, message)->
     @res.status(500).json id:id, error:message||""
 
   sendNotification:(method, params)->
-    @res.json id:null, method:method, result:params||""
+    @res.json id:null, method:method, result:if params? then params else ""
 
-  sendReply:(id, method, params)->
-    @res.json id:id, result:params||""
+  sendReply:(id, params)->
+    @res.json id:id, result:if params? then params else ""
 
 
 
@@ -38,20 +38,21 @@ Server.register = (method, callback)->
 Server.handle = (req, res)->
   if @auth?
     @auth req, (err, user)=>
-      if err?
+      if err? or !user?
+        console.log "#{req.connection.remoteAddress} not authorized"
         res.status(401).json({error:"Unauthorized"})
       else
         @handleNoAuth req, res, user
   else
     @handleNoAuth req, res, undefined
 
-Server.handleNoAuth:(req, res, user)->
+Server.handleNoAuth = (req, res, user)->
   try
     request = if req.body instanceof Object then req.body else JSON.parse req.body
     reply = new Reply new Session(res), request.id
     @execute request.method, request.params, reply, user
   catch e
-    console.warn(e);
+    console.warn "#{req.connection.remoteAddress} invalid request #{e}"
     res.status(500).json({error: "invalid request"})
 
 
@@ -62,6 +63,7 @@ Server.execute = (method, params, reply, user)->
     if @defaultMethod?
       @defaultMethod method, params, reply, user
     else
+      console.warn "#{req.connection.remoteAddress} invalid requested method #{method}"
       reply.error "method #{method} not found"
 
 Server.setAuth = (@auth)->
