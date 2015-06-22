@@ -39,7 +39,7 @@ Server.handle = (req, res)->
   if @auth?
     @auth req, (err, user)=>
       if err? or !user?
-        console.log "#{req.connection.remoteAddress} not authorized"
+        console.log "#{req.connection.remoteAddress} not authorized : #{err}"
         res.status(401).json({error:"Unauthorized"})
       else
         @handleNoAuth req, res, user
