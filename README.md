@@ -39,7 +39,7 @@ server.register("ping", function(args, reply){
 
 or bulk register
 ```javascript
-server.register({ping:function(args, reply){reply("pong");}, time:function(args, reply){return reply.error("some error");}}
+server.register({ping:function(args, reply){reply("pong");}, time:function(args, reply){return reply.error("some error");}});
 ```
 
 
