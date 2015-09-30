@@ -21,7 +21,7 @@ Server = require("jsonrpc-node").HTTP.Server;
 
 Create server object
 ```javascript
-var server = new Server({echo:function(args, reply){return reply(args);});
+var server = new Server({echo:function(args, reply){return reply(args);}});
 ```
 or without arguments
 ```javascript
