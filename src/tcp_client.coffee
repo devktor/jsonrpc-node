@@ -67,7 +67,7 @@ class Client extends Session
       @_call method, params, callback, timeout
     else
       if connecting
-        @onceConnected if err? then callback err else @_call method, params, callback, timeout
+        @onceConnected (err)=> if err? then callback err else @_call method, params, callback, timeout
       else
         @reconnect (err)=> if err? then callback err else @_call method, params, callback, timeout
 
