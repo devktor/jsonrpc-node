@@ -47,7 +47,7 @@ Server.execute = (session, msg)->
 
 Server.executeNoAuth = (msg, reply, user)->
   method = @methods[msg.method]
-  args = if msg.params? and Array.isArray msg.params then msg.params else []
+  args = if msg.params? and ((Array.isArray msg.params) or typeof msg.params == 'object') then msg.params else []
   if method?
     method args, reply, user
   else
