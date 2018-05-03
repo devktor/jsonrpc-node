@@ -50,6 +50,7 @@ class Client extends Session
 
 
   reconnect:(callback)->
+    connected = false
     @socket.destroy()
     @connect @port, @host, @secure, callback
 
