@@ -1,14 +1,14 @@
-##JsonRPC-Node
+## JsonRPC-Node
 Multi transport JSON-RPC client/server with SSL support for node.js
 
 Can be used as stand alone server or as net.Server/express middleware
 
-###installation
+### Installation
 ```bash
 npm install jsonrpc-node
 ```
 
-###server
+### Server
 
 Include library
 ```javascript
@@ -68,7 +68,7 @@ app.use("/api", server);
 ```
 
 
-###client
+### Client
 
 Include library
 ```javascript
